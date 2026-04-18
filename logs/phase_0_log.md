@@ -43,16 +43,30 @@ user.email = allipuramsamanyu@gmail.com
 
 ## GitHub Blocker
 
-GitHub CLI is not installed in the environment:
+Initial check showed GitHub CLI was not installed in the environment:
 
 ```text
 zsh:1: command not found: gh
 ```
 
-Remote repository creation and push are blocked until either:
+After GitHub CLI was installed externally, a pure-git push was attempted using:
 
-1. `gh` is installed and authenticated, or
-2. an empty GitHub repository named `robot_vision` is created manually and its remote URL is added locally.
+```text
+origin = https://github.com/Samanyu-dev/robot_vision.git
+git push -u origin main
+```
+
+GitHub responded:
+
+```text
+remote: Repository not found.
+fatal: repository 'https://github.com/Samanyu-dev/robot_vision.git/' not found
+```
+
+Conclusion: plain `git` can push to an existing repository, but it cannot create a new GitHub repository by itself. Remote repository creation is still blocked until either:
+
+1. an empty GitHub repository named `robot_vision` is created manually, or
+2. repository creation is performed with `gh repo create` or the GitHub web UI/API.
 
 ## Next Phase
 
