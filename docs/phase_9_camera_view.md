@@ -2,7 +2,7 @@
 
 ## Objective
 
-Animate the projected cube directly in the image plane to simulate the live output of the wrist camera.
+Animate the projected cube directly in the image plane and present it as a dashboard-style camera feed for submission.
 
 ## View Content
 
@@ -14,6 +14,9 @@ Each frame renders:
 - vertex markers and labels
 - a trail for vertex 6 `(+,+,+)`
 - an out-of-view warning banner when needed
+- `u(t)` and `v(t)` plots for the tracked vertex
+- visible-vertex count over time
+- tracked depth `z_C` over time
 
 This phase reuses the same motion profile as Phase 7 and the same cube edge topology from Phase 5.
 
@@ -32,7 +35,7 @@ outputs/phase9_camera_view.gif
 outputs/phase9_snapshot_cam.png
 ```
 
-The GIF is the animated camera feed. The PNG is a single reference snapshot at `t = 0`.
+The GIF is an animated camera dashboard. The PNG is a matching reference dashboard snapshot at `t = 0`.
 
 ## Implementation Files
 

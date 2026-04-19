@@ -1,21 +1,18 @@
 # Commands Reference
 
-This file lists the main commands for the project, when to use them, and what their outputs mean.
+This file is the submission runbook for the project. Every command below is written from the project root:
 
-## Environment Setup
+```text
+ROBOT_VISION/
+```
 
-Create a virtual environment:
+## 1. Environment Setup
+
+Create the virtual environment:
 
 ```bash
 python3 -m venv .venv
 ```
-
-Use when starting on a fresh machine or after deleting `.venv`.
-
-Output meaning:
-
-- no output usually means the environment was created successfully
-- `.venv/` appears in the project folder
 
 Install dependencies:
 
@@ -23,137 +20,210 @@ Install dependencies:
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
-Use after creating `.venv` or after changing `requirements.txt`.
-
-Output meaning:
-
-- package download/install lines show dependency installation progress
-- `Successfully installed ...` means dependencies are ready
-- network errors mean the machine cannot reach PyPI or needs network approval
-
-## Validation
-
-Run all tests:
+Optional but recommended for plotting commands on systems where `~/.matplotlib` is not writable:
 
 ```bash
-.venv/bin/python -m unittest discover -s tests
+export MPLCONFIGDIR=/tmp/mpl_robot_vision
 ```
 
-Use after every phase or before pushing.
+## 2. Run Individual Phases
 
-Output meaning:
-
-- `OK` means all tests passed
-- `FAILED` means at least one behavior check failed and should be fixed before pushing
-- the number after `Ran` tells how many unit tests were executed
-
-## Phase Scripts
-
-Run Phase 1 forward kinematics:
+Phase 1:
 
 ```bash
 .venv/bin/python scripts/phase1_forward_kinematics.py
 ```
 
-Use when checking DH parameters and end-effector pose.
+Creates:
 
-Output meaning:
+```text
+outputs/phase1_forward_kinematics.txt
+```
 
-- `T_B1`, `T_B2`, and `T_B3` are the base-to-link transforms
-- `T_BE` is the final end-effector pose
-- `End-effector position [m]` is the wrist/end-effector origin in base coordinates
-- result file: `outputs/phase1_forward_kinematics.txt`
-
-Run Phase 2 camera extrinsics:
+Phase 2:
 
 ```bash
 .venv/bin/python scripts/phase2_camera_extrinsics.py
 ```
 
-Use when checking the wrist-mounted camera transform.
+Creates:
 
-Output meaning:
+```text
+outputs/phase2_camera_extrinsics.txt
+```
 
-- `T_EC` is the camera pose relative to the end-effector
-- `T_GC` is the camera pose relative to the global/base frame
-- `Camera origin` is the camera center in world coordinates
-- `Camera optical axis +Z_C` shows where the camera is looking in world coordinates
-- result file: `outputs/phase2_camera_extrinsics.txt`
-
-Run Phase 3 projection:
+Phase 3:
 
 ```bash
 .venv/bin/python scripts/phase3_projection.py
 ```
 
-Use when checking the world-to-image projection derivation.
+Creates:
 
-Output meaning:
+```text
+outputs/phase3_projection.txt
+```
 
-- `K` is the intrinsic matrix
-- `T_CG = inv(T_GC)` transforms world points into the camera frame
-- `[R | t]` is the world-to-camera extrinsic matrix
-- `K [R | t]` is the camera projection matrix
-- `Pixel projection [u, v]` is the final image coordinate
-- result file: `outputs/phase3_projection.txt`
-
-Run Phase 4 one-vertex image coordinate calculation:
+Phase 4:
 
 ```bash
 .venv/bin/python scripts/phase4_image_coordinates.py
 ```
 
-Use when checking a concrete cube vertex projection.
+Creates:
 
-Output meaning:
+```text
+outputs/phase4_image_coordinates.txt
+```
 
-- `Cube setup` defines cube side length, center, and selected vertex
-- `Selected cube vertex in world frame P_G` is the object point before camera transform
-- `Selected cube vertex in camera frame P_C` is the same point after `inv(T_GC)`
-- `Pixel coordinate [u, v]` is the final image coordinate
-- `Inside 640 x 480 image bounds` tells whether the vertex is visible in the image
-- result file: `outputs/phase4_image_coordinates.txt`
+Phase 5:
 
-## Git Commands
+```bash
+.venv/bin/python scripts/phase5_cube_vertices.py
+```
 
-Check current git state:
+Creates:
+
+```text
+outputs/phase5_cube_vertices.txt
+outputs/phase5_cube_image.png
+```
+
+Phase 6:
+
+```bash
+.venv/bin/python scripts/phase6_jacobian.py
+```
+
+Creates:
+
+```text
+outputs/phase6_jacobian.txt
+```
+
+Phase 7:
+
+```bash
+.venv/bin/python scripts/phase7_trajectory.py
+```
+
+Creates:
+
+```text
+outputs/phase7_trajectory.txt
+outputs/phase7_uv_plot.png
+outputs/phase7_uv_vs_time.png
+```
+
+Phase 8:
+
+```bash
+.venv/bin/python scripts/phase8_simulation_3d.py
+```
+
+Creates:
+
+```text
+outputs/phase8_simulation_3d.gif
+outputs/phase8_snapshot_3d.png
+```
+
+Phase 9:
+
+```bash
+.venv/bin/python scripts/phase9_camera_view.py
+```
+
+Creates:
+
+```text
+outputs/phase9_camera_view.gif
+outputs/phase9_snapshot_cam.png
+```
+
+## 3. Run Everything for Submission
+
+Use this exact sequence:
+
+```bash
+export MPLCONFIGDIR=/tmp/mpl_robot_vision
+.venv/bin/python scripts/phase1_forward_kinematics.py
+.venv/bin/python scripts/phase2_camera_extrinsics.py
+.venv/bin/python scripts/phase3_projection.py
+.venv/bin/python scripts/phase4_image_coordinates.py
+.venv/bin/python scripts/phase5_cube_vertices.py
+.venv/bin/python scripts/phase6_jacobian.py
+.venv/bin/python scripts/phase7_trajectory.py
+.venv/bin/python scripts/phase8_simulation_3d.py
+.venv/bin/python scripts/phase9_camera_view.py
+```
+
+## 4. Run Validation
+
+Run the full test suite:
+
+```bash
+.venv/bin/python -m unittest discover -s tests
+```
+
+Expected result:
+
+```text
+OK
+```
+
+## 5. Inspect Generated Submission Files
+
+List all output files:
+
+```bash
+ls -lh outputs
+```
+
+View the text outputs quickly:
+
+```bash
+sed -n '1,160p' outputs/phase1_forward_kinematics.txt
+sed -n '1,160p' outputs/phase2_camera_extrinsics.txt
+sed -n '1,160p' outputs/phase3_projection.txt
+sed -n '1,160p' outputs/phase4_image_coordinates.txt
+sed -n '1,160p' outputs/phase5_cube_vertices.txt
+sed -n '1,200p' outputs/phase6_jacobian.txt
+sed -n '1,200p' outputs/phase7_trajectory.txt
+```
+
+## 6. Git Commands
+
+Check repository status:
 
 ```bash
 git status --short --branch
 ```
 
-Use before and after each phase.
-
-Output meaning:
-
-- `## main...origin/main` with no changed files means local and remote are clean and synced
-- lines beginning with `M` are modified files
-- lines beginning with `??` are untracked files
-
-View recent commits:
+View recent phase commits:
 
 ```bash
-git log --oneline --decorate --max-count 8
+git log --oneline --decorate --max-count 12
 ```
 
-Use to confirm phase checkpoints.
-
-Output meaning:
-
-- the first line is the current commit
-- `HEAD -> main, origin/main` means the current local branch and GitHub remote point to the same commit
-
-Push current branch:
+Push local commits:
 
 ```bash
 git push origin main
 ```
 
-Use after committing a phase.
+## 7. Submission Checklist
 
-Output meaning:
+Before submitting, make sure these commands have succeeded:
 
-- `main -> main` means the commit was pushed to GitHub
-- `Everything up-to-date` means there is nothing new to push
-- authentication or repository errors mean GitHub credentials or remote setup need attention
+```bash
+.venv/bin/python -m unittest discover -s tests
+ls -lh outputs
+git status --short --branch
+```
 
+The final checks should show:
+
+- tests passing
+- all expected output files present
+- clean git status or only intentional local media artifacts
