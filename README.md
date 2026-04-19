@@ -51,7 +51,7 @@ robot_vision/
 
 Core tools:
 
-- Python 3.10+
+- Python 3.9+
 - NumPy
 - SciPy
 - Matplotlib
@@ -64,6 +64,8 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
+
+See [docs/commands_reference.md](docs/commands_reference.md) for the commands to run for each phase and what each output represents.
 
 ## GitHub Status
 

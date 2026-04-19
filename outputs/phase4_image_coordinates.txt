@@ -1,0 +1,44 @@
+Phase 4: Image Coordinates for One Cube Vertex
+
+Joint angles:
+degrees: [ 30.  45. -20.]
+radians: [ 0.523599  0.785398 -0.349066]
+
+Camera intrinsics K:
+[[600.   0. 320.]
+ [  0. 600. 240.]
+ [  0.   0.   1.]]
+
+T_BE:
+[[ 0.784886 -0.365998  0.5       0.511033]
+ [ 0.453154 -0.211309 -0.866025  0.295045]
+ [ 0.422618  0.906308  0.        0.794984]
+ [ 0.        0.        0.        1.      ]]
+
+T_GC:
+[[-0.5      -0.612372  0.612372  0.593824]
+ [ 0.866025 -0.353553  0.353553  0.296656]
+ [-0.        0.707107  0.707107  0.828793]
+ [ 0.        0.        0.        1.      ]]
+
+Cube setup:
+side length [m]: 0.200000
+center selected 1.20 m along camera +Z axis, then expressed in world frame
+cube center P_center_G [m]: [1.328671 0.720921 1.677321]
+selected vertex signs: (1, 1, 1)
+
+Selected cube vertex in world frame P_G [m]:
+[1.428671 0.820921 1.777321]
+
+Selected cube vertex in camera frame P_C [m]:
+[ 0.036603 -0.025882  1.367303  1.      ]
+
+Projection equations:
+u = fx * X_C / Z_C + cx
+v = fy * Y_C / Z_C + cy
+
+Pixel coordinate [u, v]:
+[336.061926 228.642503]
+
+In front of camera: True
+Inside 640 x 480 image bounds: True
