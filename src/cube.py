@@ -68,3 +68,15 @@ def cube_vertex_world(
     half = validate_side_length(side_length) / 2.0
     return center_array + half * signs_array
 
+
+# ---------------------------------------------------------------------------
+# Cube edge list - 12 pairs of vertex indices
+# Vertex order produced by cube_vertices_local / cube_vertices_world:
+#   0 (-,-,-)  1 (+,-,-)  2 (+,+,-)  3 (-,+,-)
+#   4 (-,-,+)  5 (+,-,+)  6 (+,+,+)  7 (-,+,+)
+# ---------------------------------------------------------------------------
+CUBE_EDGES: list[tuple[int, int]] = [
+    (0, 1), (1, 2), (2, 3), (3, 0),
+    (4, 5), (5, 6), (6, 7), (7, 4),
+    (0, 4), (1, 5), (2, 6), (3, 7),
+]
