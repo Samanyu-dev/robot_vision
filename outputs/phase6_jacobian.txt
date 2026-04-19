@@ -1,0 +1,40 @@
+Phase 6: Jacobian and Joint Velocity
+
+Joint angles [deg]: [29.999999999999996, 45.0, -20.0]
+
+Frame origins o_0 ... o_3 [m]:
+  o_0 = [0. 0. 0.]
+  o_1 = [0.   0.   0.35]
+  o_2 = [0.275568 0.159099 0.668198]
+  o_3 = [0.511033 0.295045 0.794984]
+
+Z-axes z_0 ... z_3:
+  z_0 = [0. 0. 1.]
+  z_1 = [ 5.000000e-01 -8.660254e-01  6.123234e-17]
+  z_2 = [ 5.000000e-01 -8.660254e-01  6.123234e-17]
+  z_3 = [ 5.000000e-01 -8.660254e-01  6.123234e-17]
+
+Geometric Jacobian J (6 x 3):
+  Rows 0-2 : linear   (z_{i-1} x (o_E - o_{i-1}))
+  Rows 3-5 : angular  (z_{i-1})
+
+[[-0.295045 -0.385367 -0.109799]
+ [ 0.511033 -0.222492 -0.063393]
+ [ 0.        0.59009   0.271892]
+ [ 0.        0.5       0.5     ]
+ [ 0.       -0.866025 -0.866025]
+ [ 1.        0.        0.      ]]
+
+Yoshikawa manipulability: 0.525249
+Condition number of J:    5.6507
+
+Joint velocity calculation:
+  Desired V  = [0.1, 0.05, 0.0, 0.0, 0.0, 0.3]
+  q_dot      = pinv(J) @ V
+  q_dot      = [ 0.219586 -0.180386  0.188399] [rad/s]
+
+Note: J is 6 x 3 (rank 3). pinv(J) gives the minimum-norm q_dot
+that minimises ||J q_dot - V||. Full 6-DOF recovery needs a 6 x 6 J.
+
+Projection of V onto col(J): [-0.015959  0.140407 -0.05522   0.004006 -0.006939  0.219586]
+J @ q_dot:                   [-0.015959  0.140407 -0.05522   0.004006 -0.006939  0.219586]
