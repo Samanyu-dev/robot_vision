@@ -2,6 +2,30 @@
 
 Phase-wise implementation of a 3R robot arm with an end-effector mounted camera, camera projection, cube visualization, image-plane simulation, Jacobian-based velocity analysis, trajectory plotting, videos, and report artifacts.
 
+## Live Demo
+
+This repository is prepared for a public Streamlit demo.
+
+Entry point:
+
+```text
+app.py
+```
+
+Local run:
+
+```bash
+.venv/bin/streamlit run app.py
+```
+
+Deployment guide: [docs/live_demo.md](docs/live_demo.md)
+
+After deployment, add the public `streamlit.app` link here:
+
+```text
+Live app: pending deployment
+```
+
 ## Execution Plan
 
 1. Phase 0: Understand the system and document the frame pipeline.
