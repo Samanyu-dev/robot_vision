@@ -1,5 +1,13 @@
 <div align="center">
 
+<h1 style="font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 3.5rem; background: linear-gradient(90deg, #4fc3f7, #ff5ad1, #ffe082); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">
+  🤖 ROBOT VISION LAB
+</h1>
+
+<p style="font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; color: #64748b; letter-spacing: 4px; text-transform: uppercase; margin-top: 0.5rem;">
+  Premium 3R Manipulator · Wrist Camera · Real-time Projection
+</p>
+
 <br>
 
 <!-- BADGES -->
