@@ -30,7 +30,7 @@ if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
 from camera import CameraMount, camera_pose_in_global  # noqa: E402
-from cube import cube_vertex_world  # noqa: E402
+from cube import DEFAULT_CUBE_CENTER_G, DEFAULT_CUBE_SIDE_LENGTH, cube_vertex_world  # noqa: E402
 from projection import CameraIntrinsics, project_world_point  # noqa: E402
 
 T_TOTAL = 2.0 * np.pi
@@ -39,7 +39,8 @@ T_VEC = np.linspace(0.0, T_TOTAL, N_FRAMES)
 
 MOUNT = CameraMount(translation_e=(0.08, 0.0, 0.04), tilt_rad=np.deg2rad(-20.0))
 INTRINSICS = CameraIntrinsics(fx=600.0, fy=600.0, cx=320.0, cy=240.0)
-CUBE_SIDE = 0.20
+CUBE_SIDE = DEFAULT_CUBE_SIDE_LENGTH
+FIXED_CUBE_CENTER_G = np.array(DEFAULT_CUBE_CENTER_G, dtype=float)
 VERTEX_SIGNS = (1, 1, 1)
 
 
@@ -65,8 +66,7 @@ def compute_trajectory() -> tuple[np.ndarray, np.ndarray, list[bool]]:
     for t_value in T_VEC:
         angles = joint_angles_at(t_value)
         t_g_c = camera_pose_in_global(angles, mount=MOUNT)
-        cube_center = (t_g_c @ np.array([0.0, 0.0, 1.20, 1.0], dtype=float))[:3]
-        vertex = cube_vertex_world(cube_center, CUBE_SIDE, VERTEX_SIGNS)
+        vertex = cube_vertex_world(FIXED_CUBE_CENTER_G, CUBE_SIDE, VERTEX_SIGNS)
         result = project_world_point(vertex, t_g_c, INTRINSICS)
 
         if result.in_front and not np.isnan(result.pixel).any():
@@ -191,6 +191,7 @@ def build_text_report(
         "theta_1(t) = 30 + 20*sin(t)  [deg]",
         "theta_2(t) = 45 + 15*sin(2t) [deg]",
         "theta_3(t) = -20 + 10*cos(t) [deg]",
+        f"Fixed cube center P_obj_G = {FIXED_CUBE_CENTER_G.tolist()} [m]",
         "Tracked vertex: (+L/2, +L/2, +L/2)",
         "",
         f"{'Frame':>5}  {'t':>7}  {'u (px)':>10}  {'v (px)':>10}  {'In view':>7}",

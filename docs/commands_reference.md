@@ -89,6 +89,12 @@ outputs/phase5_cube_vertices.txt
 outputs/phase5_cube_image.png
 ```
 
+Model note:
+
+```text
+Cube center fixed in world frame at P_obj_G = [1.40, 0.60, 1.80]^T m
+```
+
 Phase 6:
 
 ```bash
@@ -190,6 +196,12 @@ sed -n '1,160p' outputs/phase4_image_coordinates.txt
 sed -n '1,160p' outputs/phase5_cube_vertices.txt
 sed -n '1,200p' outputs/phase6_jacobian.txt
 sed -n '1,200p' outputs/phase7_trajectory.txt
+```
+
+Open the submission report:
+
+```bash
+open docs/submission_report.docx
 ```
 
 ## 6. Git Commands

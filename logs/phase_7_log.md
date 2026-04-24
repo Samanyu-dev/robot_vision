@@ -11,6 +11,7 @@ Track a cube vertex through a time-varying joint trajectory and generate image-p
 - Added `scripts/phase7_trajectory.py`.
 - Added `docs/phase_7_trajectory.md`.
 - Added `logs/phase_7_log.md`.
+- Fixed the tracked cube to a constant global-frame position.
 
 ## Verification
 
@@ -23,7 +24,7 @@ Commands run:
 Key result:
 
 ```text
-Frames in view: 200/200  (100.0%)
+Frames in view: 141/200  (70.5%)
 ```
 
 Artifacts generated:

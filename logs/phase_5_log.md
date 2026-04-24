@@ -12,6 +12,7 @@ Project all 8 cube vertices, add cube edge connectivity, and render the wirefram
 - Added `scripts/phase5_cube_vertices.py`.
 - Added `docs/phase_5_cube_vertices.md`.
 - Added `logs/phase_5_log.md`.
+- Fixed the cube center in the global frame at `P_obj_G = [1.40, 0.60, 1.80]^T m`.
 
 ## Verification
 

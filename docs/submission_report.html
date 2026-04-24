@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Robot Vision Submission Report</title>
+  <style>
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      margin: 40px;
+      line-height: 1.45;
+      color: #111111;
+    }
+    h1, h2, h3 {
+      color: #0f3557;
+      margin-top: 24px;
+    }
+    code, pre {
+      font-family: Menlo, Consolas, monospace;
+    }
+    pre {
+      background: #f2f5f8;
+      border: 1px solid #d7e0ea;
+      padding: 12px;
+      white-space: pre-wrap;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 12px;
+    }
+    th, td {
+      border: 1px solid #cfd8e3;
+      padding: 8px 10px;
+      text-align: left;
+    }
+    th {
+      background: #edf3f8;
+    }
+    .small {
+      color: #555555;
+      font-size: 11pt;
+    }
+  </style>
+</head>
+<body>
+  <h1>Robot Vision Submission Report</h1>
+  <p class="small">
+    Project: 3R manipulator with wrist-mounted camera and fixed world-space cube
+  </p>
+
+  <h2>1. System Setup</h2>
+  <p>
+    The system uses a 3R revolute manipulator, a pinhole camera rigidly mounted to the
+    end-effector, and a cube fixed in the global frame. The coordinate frames are:
+  </p>
+  <ul>
+    <li><strong>{G}</strong> Global frame</li>
+    <li><strong>{B}</strong> Robot base frame</li>
+    <li><strong>{E}</strong> End-effector frame</li>
+    <li><strong>{C}</strong> Camera frame</li>
+    <li><strong>{I}</strong> Image frame</li>
+  </ul>
+  <p>The fixed cube center used in the submission is:</p>
+  <pre>P_obj_G = [1.40, 0.60, 1.80]^T m
+side length = 0.20 m</pre>
+
+  <h2>2. Transformation from World Coordinates to Image Pixel Coordinates</h2>
+  <p>The derivation implemented in the project is:</p>
+  <pre>P_C = T_CG P_G = inv(T_GC) P_G
+
+s [u, v, 1]^T = K [R | t] P_G
+
+K = [ fx  0  cx ]
+    [ 0   fy cy ]
+    [ 0   0  1  ]
+
+u = fx X_C / Z_C + cx
+v = fy Y_C / Z_C + cy</pre>
+  <p>
+    The camera pose is constructed from robot forward kinematics and the rigid camera mount:
+  </p>
+  <pre>T_GC = T_GB T_BE T_EC</pre>
+
+  <h2>3. Image Coordinate Computation</h2>
+  <p>
+    For a given camera pose and object point, the project computes the image coordinate by:
+  </p>
+  <ol>
+    <li>Transforming the world point into the camera frame</li>
+    <li>Checking that the point is in front of the camera</li>
+    <li>Applying the intrinsic matrix to obtain the pixel coordinate</li>
+  </ol>
+  <p>
+    The single-point and full-cube projection outputs are stored in:
+  </p>
+  <ul>
+    <li><code>outputs/phase4_image_coordinates.txt</code></li>
+    <li><code>outputs/phase5_cube_vertices.txt</code></li>
+    <li><code>outputs/phase5_cube_image.png</code></li>
+  </ul>
+
+  <h2>4. Joint Velocity Calculation</h2>
+  <p>
+    The geometric Jacobian is implemented for the 3R manipulator using:
+  </p>
+  <pre>J_i = [ z_(i-1) x (o_E - o_(i-1)) ]
+      [         z_(i-1)          ]</pre>
+  <p>
+    The project then computes the minimum-norm joint velocity:
+  </p>
+  <pre>q_dot = pinv(J) V</pre>
+  <p>
+    The numerical Jacobian result is recorded in <code>outputs/phase6_jacobian.txt</code>.
+  </p>
+
+  <h2>5. Cube Vertex Trajectory in the Image Plane</h2>
+  <p>
+    The robot follows the prescribed trajectory:
+  </p>
+  <pre>theta_1(t) = 30 deg + 20 deg sin(t)
+theta_2(t) = 45 deg + 15 deg sin(2t)
+theta_3(t) = -20 deg + 10 deg cos(t)</pre>
+  <p>
+    A specific cube vertex <code>(+L/2, +L/2, +L/2)</code> is projected over time into the image plane.
+    The results are stored in:
+  </p>
+  <ul>
+    <li><code>outputs/phase7_trajectory.txt</code></li>
+    <li><code>outputs/phase7_uv_plot.png</code></li>
+    <li><code>outputs/phase7_uv_vs_time.png</code></li>
+  </ul>
+
+  <h2>6. Simulation Video 1: 3D World View</h2>
+  <p>The Phase 8 simulation shows:</p>
+  <ul>
+    <li>3R robot moving along the prescribed trajectory</li>
+    <li>Camera mounted at end-effector as a magenta square</li>
+    <li>Global frame at the origin</li>
+    <li>Wrist frame at the end-effector</li>
+    <li>Camera frame at the camera location</li>
+    <li>Stationary cube as a red wireframe</li>
+    <li>Trajectory path as a black dashed line</li>
+  </ul>
+  <p>Generated outputs:</p>
+  <ul>
+    <li><code>outputs/phase8_simulation_3d.gif</code></li>
+    <li><code>outputs/phase8_snapshot_3d.png</code></li>
+  </ul>
+
+  <h2>7. Simulation Video 2: Camera View</h2>
+  <p>The Phase 9 simulation shows:</p>
+  <ul>
+    <li>640 x 480 image plane</li>
+    <li>Principal point as a red cross</li>
+    <li>Projection of cube vertices as blue dots</li>
+    <li>Cube edges as blue lines</li>
+    <li><code>OBJECT OUT OF VIEW</code> message when the object leaves the field of view</li>
+  </ul>
+  <p>Generated outputs:</p>
+  <ul>
+    <li><code>outputs/phase9_camera_view.gif</code></li>
+    <li><code>outputs/phase9_snapshot_cam.png</code></li>
+  </ul>
+
+  <h2>8. File Summary</h2>
+  <table>
+    <tr>
+      <th>Phase</th>
+      <th>Main Script</th>
+      <th>Primary Output</th>
+    </tr>
+    <tr><td>1</td><td><code>scripts/phase1_forward_kinematics.py</code></td><td><code>outputs/phase1_forward_kinematics.txt</code></td></tr>
+    <tr><td>2</td><td><code>scripts/phase2_camera_extrinsics.py</code></td><td><code>outputs/phase2_camera_extrinsics.txt</code></td></tr>
+    <tr><td>3</td><td><code>scripts/phase3_projection.py</code></td><td><code>outputs/phase3_projection.txt</code></td></tr>
+    <tr><td>4</td><td><code>scripts/phase4_image_coordinates.py</code></td><td><code>outputs/phase4_image_coordinates.txt</code></td></tr>
+    <tr><td>5</td><td><code>scripts/phase5_cube_vertices.py</code></td><td><code>outputs/phase5_cube_vertices.txt</code></td></tr>
+    <tr><td>6</td><td><code>scripts/phase6_jacobian.py</code></td><td><code>outputs/phase6_jacobian.txt</code></td></tr>
+    <tr><td>7</td><td><code>scripts/phase7_trajectory.py</code></td><td><code>outputs/phase7_trajectory.txt</code></td></tr>
+    <tr><td>8</td><td><code>scripts/phase8_simulation_3d.py</code></td><td><code>outputs/phase8_simulation_3d.gif</code></td></tr>
+    <tr><td>9</td><td><code>scripts/phase9_camera_view.py</code></td><td><code>outputs/phase9_camera_view.gif</code></td></tr>
+  </table>
+
+  <h2>9. Verification Commands</h2>
+  <pre>.venv/bin/python -m unittest discover -s tests
+ls -lh outputs
+git status --short --branch</pre>
+
+  <p>
+    This report is paired with the project source, generated outputs, logs, and documentation.
+  </p>
+</body>
+</html>

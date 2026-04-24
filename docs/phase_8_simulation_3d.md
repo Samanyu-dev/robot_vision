@@ -4,14 +4,21 @@
 
 Animate the robot, the wrist-mounted camera, and the observed cube in a shared 3D world view, then package the result as a submission-ready dashboard.
 
+The cube is fixed in the global frame at:
+
+```text
+P_obj_G = [1.40, 0.60, 1.80]^T m
+```
+
 ## Scene Content
 
 Each animation frame renders:
 
 - the global frame
 - robot links and joints
-- local frame axes
+- the wrist frame at the end-effector
 - the camera position and optical direction
+- the camera frame at the camera origin
 - a camera frustum estimate
 - the cube wireframe
 - translucent cube faces

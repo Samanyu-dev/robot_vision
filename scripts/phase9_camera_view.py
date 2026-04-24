@@ -27,7 +27,7 @@ if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
 from camera import CameraMount, camera_pose_in_global  # noqa: E402
-from cube import CUBE_EDGES, cube_vertices_world  # noqa: E402
+from cube import CUBE_EDGES, DEFAULT_CUBE_CENTER_G, DEFAULT_CUBE_SIDE_LENGTH, cube_vertices_world  # noqa: E402
 from projection import CameraIntrinsics, project_world_point  # noqa: E402
 
 N_FRAMES = 80
@@ -35,7 +35,8 @@ T_TOTAL = 2.0 * np.pi
 T_VEC = np.linspace(0.0, T_TOTAL, N_FRAMES)
 MOUNT = CameraMount(translation_e=(0.08, 0.0, 0.04), tilt_rad=np.deg2rad(-20.0))
 INTRINSICS = CameraIntrinsics(fx=600.0, fy=600.0, cx=320.0, cy=240.0)
-CUBE_SIDE = 0.20
+CUBE_SIDE = DEFAULT_CUBE_SIDE_LENGTH
+FIXED_CUBE_CENTER_G = np.array(DEFAULT_CUBE_CENTER_G, dtype=float)
 W, H = INTRINSICS.width, INTRINSICS.height
 TRACKED_VERTEX_INDEX = 6
 
@@ -62,8 +63,7 @@ def build_frame_data() -> dict[str, np.ndarray]:
     for frame_index, t_value in enumerate(T_VEC):
         angles = joint_angles_at(t_value)
         t_g_c = camera_pose_in_global(angles, mount=MOUNT)
-        cube_center = (t_g_c @ np.array([0.0, 0.0, 1.20, 1.0], dtype=float))[:3]
-        vertices = cube_vertices_world(cube_center, CUBE_SIDE)
+        vertices = cube_vertices_world(FIXED_CUBE_CENTER_G, CUBE_SIDE)
 
         for vertex_index, vertex in enumerate(vertices):
             result = project_world_point(vertex, t_g_c, INTRINSICS)
@@ -159,7 +159,7 @@ def draw_camera_panel(axis: plt.Axes, frame_index: int) -> None:
 
     for index, (pixel, is_visible) in enumerate(zip(pixels, visible)):
         if not np.isnan(pixel).any():
-            color = "lime" if is_visible else "orange"
+            color = "deepskyblue"
             marker_size = 8 if index == TRACKED_VERTEX_INDEX else 6.5
             axis.plot(pixel[0], pixel[1], "o", color=color, markersize=marker_size, zorder=5)
             axis.text(pixel[0] + 5, pixel[1] - 5, str(index), color=color, fontsize=8)
@@ -168,7 +168,7 @@ def draw_camera_panel(axis: plt.Axes, frame_index: int) -> None:
         axis.text(
             W / 2.0,
             H / 2.0,
-            "SOME VERTICES OUT OF VIEW",
+            "OBJECT OUT OF VIEW",
             color="red",
             fontsize=14,
             fontweight="bold",
@@ -182,6 +182,7 @@ def draw_camera_panel(axis: plt.Axes, frame_index: int) -> None:
         38,
         (
             f"Visible vertices: {FRAME_DATA['visible_counts'][frame_index]}/8\n"
+            f"Fixed cube center: {FIXED_CUBE_CENTER_G.tolist()}\n"
             f"Tracked vertex: {TRACKED_VERTEX_INDEX} (+,+,+)\n"
             f"Depth z_C: {FRAME_DATA['tracked_depth'][frame_index]:.3f} m"
         ),

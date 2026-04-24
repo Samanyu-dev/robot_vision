@@ -12,6 +12,7 @@ Animate the projected cube directly in the camera frame and generate a reference
 - Added `docs/phase_9_camera_view.md`.
 - Added `logs/phase_9_log.md`.
 - Upgraded the exported visuals to a dashboard layout with pixel-history and visibility plots.
+- Corrected the simulation so the cube is fixed in the global frame.
 
 ## Verification
 

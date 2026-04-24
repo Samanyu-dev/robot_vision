@@ -7,6 +7,10 @@ from typing import Sequence
 import numpy as np
 
 
+DEFAULT_CUBE_CENTER_G: tuple[float, float, float] = (1.40, 0.60, 1.80)
+DEFAULT_CUBE_SIDE_LENGTH: float = 0.20
+
+
 def validate_side_length(side_length: float) -> float:
     """Validate and return a positive cube side length."""
 
@@ -69,14 +73,9 @@ def cube_vertex_world(
     return center_array + half * signs_array
 
 
-# ---------------------------------------------------------------------------
-# Cube edge list - 12 pairs of vertex indices
-# Vertex order produced by cube_vertices_local / cube_vertices_world:
-#   0 (-,-,-)  1 (+,-,-)  2 (+,+,-)  3 (-,+,-)
-#   4 (-,-,+)  5 (+,-,+)  6 (+,+,+)  7 (-,+,+)
-# ---------------------------------------------------------------------------
+# Fixed world-space cube used by phases 5-9.
 CUBE_EDGES: list[tuple[int, int]] = [
-    (0, 1), (1, 2), (2, 3), (3, 0),
-    (4, 5), (5, 6), (6, 7), (7, 4),
-    (0, 4), (1, 5), (2, 6), (3, 7),
+    (0, 1), (1, 2), (2, 3), (3, 0),   # bottom face
+    (4, 5), (5, 6), (6, 7), (7, 4),   # top face
+    (0, 4), (1, 5), (2, 6), (3, 7),   # vertical pillars
 ]

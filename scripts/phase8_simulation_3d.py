@@ -28,7 +28,7 @@ if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
 from camera import CameraMount, camera_pose_in_global  # noqa: E402
-from cube import CUBE_EDGES, cube_vertices_world  # noqa: E402
+from cube import CUBE_EDGES, DEFAULT_CUBE_CENTER_G, DEFAULT_CUBE_SIDE_LENGTH, cube_vertices_world  # noqa: E402
 from kinematics import forward_kinematics  # noqa: E402
 from projection import CameraIntrinsics  # noqa: E402
 
@@ -37,7 +37,8 @@ T_TOTAL = 2.0 * np.pi
 T_VEC = np.linspace(0.0, T_TOTAL, N_FRAMES)
 MOUNT = CameraMount(translation_e=(0.08, 0.0, 0.04), tilt_rad=np.deg2rad(-20.0))
 INTRINSICS = CameraIntrinsics(fx=600.0, fy=600.0, cx=320.0, cy=240.0)
-CUBE_SIDE = 0.20
+CUBE_SIDE = DEFAULT_CUBE_SIDE_LENGTH
+FIXED_CUBE_CENTER_G = np.array(DEFAULT_CUBE_CENTER_G, dtype=float)
 AXIS_LEN = 0.12
 FRUSTUM_DEPTH = 0.32
 
@@ -62,12 +63,7 @@ def build_frame_data() -> dict[str, np.ndarray]:
     camera_transforms = np.array(
         [camera_pose_in_global(angles, mount=MOUNT) for angles in joint_angles]
     )
-    cube_centers = np.array(
-        [
-            (transform @ np.array([0.0, 0.0, 1.20, 1.0], dtype=float))[:3]
-            for transform in camera_transforms
-        ]
-    )
+    cube_centers = np.repeat(FIXED_CUBE_CENTER_G[np.newaxis, :], len(T_VEC), axis=0)
     end_effector_positions = np.array([result.origins[-1] for result in fk_results])
     camera_positions = camera_transforms[:, :3, 3]
     camera_to_cube_distance = np.linalg.norm(cube_centers - camera_positions, axis=1)
@@ -204,11 +200,12 @@ def draw_scene(ax: Axes3D, frame_index: int) -> None:
     for origin in origins:
         ax.scatter(*origin, color="white", s=34, depthshade=False, edgecolors="#0f141d")
 
-    for transform in result.transforms:
-        draw_frame_axes(ax, transform)
+    end_effector_transform = result.end_effector_transform
+    draw_frame_axes(ax, end_effector_transform, scale=AXIS_LEN * 1.1)
 
     camera_origin = t_g_c[:3, 3]
     ax.scatter(*camera_origin, color="#ff5ad1", s=90, marker="s", depthshade=False)
+    draw_frame_axes(ax, t_g_c, scale=AXIS_LEN * 0.95)
     ax.quiver(
         *camera_origin,
         *(t_g_c[:3, 2] * 0.28),
@@ -261,11 +258,15 @@ def draw_scene(ax: Axes3D, frame_index: int) -> None:
             trail_points[:, 0],
             trail_points[:, 1],
             trail_points[:, 2],
-            color="#ffe082",
+            color="black",
             linewidth=1.4,
             linestyle="--",
             alpha=0.9,
         )
+
+    ax.text(0.02, 0.02, 0.04, "G", color="white", fontsize=9)
+    ax.text(*(origins[-1] + np.array([0.03, 0.03, 0.03])), "E", color="white", fontsize=9)
+    ax.text(*(camera_origin + np.array([0.03, 0.03, 0.03])), "C", color="white", fontsize=9)
 
     ax.text2D(
         0.02,
@@ -273,6 +274,7 @@ def draw_scene(ax: Axes3D, frame_index: int) -> None:
         (
             f"EE = {np.array2string(origins[-1], precision=3)} m\n"
             f"Cam = {np.array2string(camera_origin, precision=3)} m\n"
+            f"Obj = {FIXED_CUBE_CENTER_G.tolist()} m\n"
             f"Cube distance = {FRAME_DATA['camera_to_cube_distance'][frame_index]:.3f} m"
         ),
         transform=ax.transAxes,

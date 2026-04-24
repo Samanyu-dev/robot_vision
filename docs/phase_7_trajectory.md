@@ -26,7 +26,7 @@ N = 200 samples
 At each sample:
 
 1. compute `T_GC`
-2. place the cube center 1.20 m along `+Z_C`
+2. keep the cube center fixed at `P_obj_G = [1.40, 0.60, 1.80]^T m`
 3. select the vertex `(+L/2, +L/2, +L/2)`
 4. project to `(u, v)`
 

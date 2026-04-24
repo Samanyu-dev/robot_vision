@@ -12,6 +12,7 @@ Animate the full robot, camera, cube, and motion trail in a 3D world-view simula
 - Added `docs/phase_8_simulation_3d.md`.
 - Added `logs/phase_8_log.md`.
 - Upgraded the exported visuals to a dashboard layout with 3D scene and side plots.
+- Corrected the simulation so the cube is fixed in the global frame.
 
 ## Verification
 
